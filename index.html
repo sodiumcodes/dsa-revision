@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C++ Data Structures & Complexity Guide - Neo-Brutalist Edition</title>
+  <title>C++ Data Structures & Algorithms Guide - Neo-Brutalist Edition</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- React & ReactDOM -->
@@ -11,7 +11,7 @@
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <!-- Babel Standalone -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Custom Neo-Brutalist Tailwind Config & Google Fonts -->
+  <!-- Custom Neo-Brutalist Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
@@ -72,7 +72,7 @@
   <script type="text/babel">
     const { useState, useMemo } = React;
 
-    // --- Inline Icons for zero CDN dependencies ---
+    // --- Inline Icons ---
     const SearchIcon = () => (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
         <circle cx="11" cy="11" r="8"></circle>
@@ -102,6 +102,13 @@
       </svg>
     );
 
+    const AlgoIcon = () => (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+      </svg>
+    );
+
     const TableIcon = () => (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
         <path d="M12 3v18M3 12h18M3 6h18M3 18h18"></path>
@@ -116,520 +123,700 @@
       </svg>
     );
 
-    const AlertIcon = () => (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
-        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-        <line x1="12" x2="12" y1="9" y2="13"></line>
-        <line x1="12" x2="12.01" y1="17" y2="17"></line>
-      </svg>
-    );
-
     const ZapIcon = () => (
       <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
       </svg>
     );
 
-    // --- Data Definitions ---
-    const DATA_STRUCTURES = [
-      {
-        id: "array",
-        name: "Array / fixed built-in array",
-        category: "Sequence Containers",
-        bgColor: "#FFE600", // Yellow
-        syntax: "int a[100]; int a[3] = {2, 4, 6};",
-        explanation: "Contiguous, fixed-size sequence; direct access by index.",
-        time: {
-          access: "O(1)",
-          search: "O(n)",
-          insertDelete: "O(n) in middle"
-        },
-        space: "Storage O(n); Operation Aux Space O(1)",
-        opCosts: "Access/update O(1); Search O(n); Insert/delete in middle O(n).",
-        keywords: ["index", "position", "fixed size", "contiguous", "matrix", "constant-time access"],
-        notes: "Size is fixed after creation. Inserting in the middle requires shifting elements. Use std::array<T, N> for a safer fixed-size STL wrapper."
-      },
+    const STRICT_DATA_STRUCTURES = [
       {
         id: "vector",
         name: "std::vector",
         category: "Sequence Containers",
         bgColor: "#00F0FF", // Cyan
-        syntax: "vector<int> v; v.push_back(x); v[i];",
-        explanation: "Resizable contiguous array; the default choice for a sequence.",
+        syntax: "vector<int> v;\nv.push_back(x);\nv[i];",
+        explanation: "Resizable dynamic contiguous array; default choice for sequence storage.",
         time: {
           access: "O(1)",
           search: "O(n)",
-          insertDelete: "push_back O(1) amortized / worst O(n); erase middle O(n)"
+          insertDelete: "push_back O(1) amortized; erase middle O(n)"
         },
-        space: "Storage O(n); reallocation extra O(n) temporary space",
-        opCosts: "Index/access/update O(1); Search O(n); push_back amortized O(1), worst-case O(n) on reallocation; insert/erase middle O(n); insert/erase at end O(1) amortized / O(1) pop.",
-        keywords: ["dynamic array", "indexed", "contiguous", "append", "random access", "sequence"],
-        notes: "Use size(), not capacity, for element count. Reallocation invalidates pointers/references/iterators. erase shifts later elements."
-      },
-      {
-        id: "string",
-        name: "std::string",
-        category: "Sequence Containers",
-        bgColor: "#FF70A6", // Pink
-        syntax: "string s = \"hello\"; s.find(\"ll\");",
-        explanation: "Resizable sequence of characters with string-specific operations.",
-        time: {
-          access: "O(1)",
-          search: "find O(n·m) worst-case",
-          insertDelete: "O(n) middle; append O(1) amortized/char"
-        },
-        space: "Storage O(n); substring/copy O(k)",
-        opCosts: "Index O(1); Append amortized O(1) per appended char (O(k) for k chars); Find substring typically O(n·m) worst-case; Insert/erase middle O(n).",
-        keywords: ["text", "characters", "substring", "prefix/suffix", "palindrome", "pattern matching"],
-        notes: "C++ strings are mutable. For many substring searches or pattern matching, consider KMP/Z algorithm or a suffix structure."
+        space: "Storage O(n); reallocation extra O(n)",
+        opCosts: "Random access O(1); Search O(n); push_back/pop_back amortized O(1); insert/erase in middle O(n).",
+        keywords: ["dynamic array", "indexed", "contiguous", "append", "random access"],
+        notes: "Use size(), not capacity. Dynamic resizing invalidates existing iterators/pointers."
       },
       {
         id: "singly-ll",
-        name: "Singly linked list",
-        category: "Sequence Containers",
-        bgColor: "#70D6FF", // Soft Cyan
-        syntax: "struct Node { int val; Node* next; };\nforward_list<int> fl;",
-        explanation: "Nodes connected by forward pointers; no direct index access.",
+        name: "Singly Linked List",
+        category: "Linked Lists",
+        bgColor: "#70D6FF", // Light Blue
+        syntax: "struct Node {\n  int val;\n  Node* next;\n};",
+        explanation: "Nodes connected by forward pointers; efficient insertions/deletions when location is known.",
         time: {
           access: "O(n)",
           search: "O(n)",
-          insertDelete: "O(1) at known node"
+          insertDelete: "O(1) at known node pointer"
         },
-        space: "Storage O(n) + pointer overhead; Aux O(1)",
-        opCosts: "Search/access kth O(n); Insert/delete at known node O(1) (locating node is O(n)).",
+        space: "Storage O(n) + 1 pointer per node",
+        opCosts: "Search/access kth O(n); Insert/delete after node O(1).",
         keywords: ["frequent insert/delete", "node pointers", "next pointer", "no shifting"],
-        notes: "A raw singly linked list is different from std::list, which is doubly linked. Deleting a node in a singly list usually needs its predecessor."
+        notes: "Deleting a node directly requires updating the previous node's next pointer."
       },
       {
         id: "doubly-ll",
-        name: "std::list (doubly linked)",
-        category: "Sequence Containers",
+        name: "Doubly Linked List (std::list)",
+        category: "Linked Lists",
         bgColor: "#FF9770", // Orange
-        syntax: "list<int> l; l.push_front(x); l.push_back(x);",
-        explanation: "Nodes link to both previous and next nodes.",
+        syntax: "list<int> l;\nl.push_front(x);\nl.push_back(x);\nl.erase(it);",
+        explanation: "Nodes link to both previous and next nodes. Supports O(1) bidirectional insertion/deletion.",
         time: {
           access: "O(n)",
           search: "O(n)",
           insertDelete: "O(1) at known iterator"
         },
-        space: "Storage O(n) (two links/node); Aux O(1)",
-        opCosts: "Insert/delete at known iterator O(1); Search/access kth O(n); front/back O(1).",
-        keywords: ["stable iterators", "frequent known-position insertions/deletions", "splice"],
-        notes: "Higher memory and poorer cache locality than vector. No [i] indexing."
+        space: "Storage O(n) + 2 pointers per node",
+        opCosts: "Insert/delete at given iterator O(1); Random access by index O(n); push_front / push_back O(1).",
+        keywords: ["stable iterators", "bidirectional", "splice", "known position insert/delete"],
+        notes: "No random access operator [i]. Higher pointer memory overhead and CPU cache misses than vector."
       },
       {
         id: "stack",
         name: "std::stack",
-        category: "Adapters & Stacks",
+        category: "Adapters",
         bgColor: "#00FF66", // Lime Green
-        syntax: "stack<int> st; st.push(x); st.top(); st.pop();",
-        explanation: "LIFO: last item added is the first removed.",
+        syntax: "stack<int> st;\nst.push(x);\nst.top();\nst.pop();",
+        explanation: "LIFO (Last In First Out) adapter. Only the top element is accessible.",
         time: {
           access: "Top O(1)",
-          search: "O(n) manual",
+          search: "N/A",
           insertDelete: "push/pop O(1)"
         },
-        space: "Storage O(n); Aux Space O(1) per op",
-        opCosts: "push O(1) amortized (default vector); top O(1); pop O(1); search O(n) only via manual removal.",
-        keywords: ["last in first out", "undo", "backtracking", "nested", "matching brackets", "monotonic stack"],
-        notes: "STL pop() returns void; read top() before popping. Always check empty() before access."
+        space: "Storage O(n); Operation Aux Space O(1)",
+        opCosts: "push O(1); top O(1); pop O(1). Iteration or searching is not supported directly.",
+        keywords: ["LIFO", "undo", "backtracking", "nested structure", "matching brackets", "recursion stack"],
+        notes: "st.pop() returns void in C++. Always call top() to inspect before popping, and check !empty()."
       },
       {
         id: "queue",
         name: "std::queue",
-        category: "Adapters & Stacks",
+        category: "Adapters",
         bgColor: "#D6C7FF", // Lavender
-        syntax: "queue<int> q; q.push(x); q.front(); q.pop();",
-        explanation: "FIFO: first item added is the first removed.",
+        syntax: "queue<int> q;\nq.push(x);\nq.front();\nq.pop();",
+        explanation: "FIFO (First In First Out) adapter. Elements are added at back and removed from front.",
         time: {
           access: "front/back O(1)",
           search: "N/A",
           insertDelete: "push/pop O(1)"
         },
-        space: "Storage O(n); Aux Space O(1) per op",
-        opCosts: "push O(1); front/back O(1); pop O(1). Searching is not directly supported.",
-        keywords: ["first come first served", "FIFO", "level order", "BFS", "scheduling", "shortest path unweighted"],
-        notes: "For graph BFS, mark a vertex visited when enqueuing it to avoid duplicate queue entries."
+        space: "Storage O(n); Operation Aux Space O(1)",
+        opCosts: "push O(1); front O(1); back O(1); pop O(1).",
+        keywords: ["FIFO", "level order", "BFS", "scheduling", "buffer", "first come first served"],
+        notes: "Used in Graph Breadth-First Search (BFS). Remember to mark nodes visited when pushing into queue."
       },
       {
         id: "deque",
-        name: "std::deque",
-        category: "Adapters & Stacks",
-        bgColor: "#FFD670", // Light Gold
-        syntax: "deque<int> d; d.push_front(x); d.push_back(y);",
-        explanation: "Double-ended queue; efficient operations at both ends & indexed access.",
+        name: "std::deque (Double-ended Queue)",
+        category: "Adapters",
+        bgColor: "#FFD670", // Gold
+        syntax: "deque<int> dq;\ndq.push_front(x);\ndq.push_back(y);\ndq[i];",
+        explanation: "Double-ended dynamic sequence; supports efficient O(1) insertions & deletions at BOTH ends.",
         time: {
           access: "Index O(1)",
           search: "O(n)",
           insertDelete: "push/pop front & back O(1); middle O(n)"
         },
-        space: "Storage O(n); Aux Space O(1)",
-        opCosts: "Access by index O(1); push/pop front/back O(1); insert/erase middle O(n).",
-        keywords: ["both ends", "sliding window", "0-1 BFS", "push front and back"],
-        notes: "Useful for monotonic queues. Unlike vector, supports efficient insertion/removal at the front."
-      },
-      {
-        id: "priority-queue",
-        name: "std::priority_queue (heap)",
-        category: "Adapters & Stacks",
-        bgColor: "#FF70A6", // Pink
-        syntax: "priority_queue<int> pq; // max-heap\npq.push(x); pq.top(); pq.pop();",
-        explanation: "Keeps the highest-priority element at the top; default is max-heap.",
-        time: {
-          access: "Top O(1)",
-          search: "O(n)",
-          insertDelete: "push O(log n); pop O(log n); build heap O(n)"
-        },
-        space: "Storage O(n); Aux Space O(1) iterative",
-        opCosts: "top O(1); push O(log n); pop O(log n); build heap from a range O(n); search arbitrary O(n).",
-        keywords: ["top k", "kth largest/smallest", "repeatedly choose min/max", "scheduling", "Dijkstra"],
-        notes: "Min-heap: priority_queue<int, vector<int>, greater<int>> pq;. No efficient arbitrary deletion or decrease-key in standard priority_queue."
-      },
-      {
-        id: "set",
-        name: "std::set / std::multiset",
-        category: "Associative Containers",
-        bgColor: "#FFE600", // Yellow
-        syntax: "set<int> s; multiset<int> ms;\ns.insert(x); s.find(x);",
-        explanation: "Ordered balanced-tree container. set stores unique keys; multiset permits duplicates.",
-        time: {
-          access: "O(log n)",
-          search: "find/count O(log n)",
-          insertDelete: "insert/erase O(log n)"
-        },
-        space: "Storage O(n); Aux Space O(1) per op",
-        opCosts: "Search/find/count O(log n) (multiset count O(log n + k)); insert O(log n); erase by iter O(1) amortized, erase by key O(log n + k); lower_bound/upper_bound O(log n).",
-        keywords: ["sorted unique values", "ordered data", "predecessor/successor", "lower bound", "range queries"],
-        notes: "Iterators traverse in sorted order. set.erase(x) removes key; in multiset it removes ALL matching keys (use find + erase iter to remove one)."
-      },
-      {
-        id: "map",
-        name: "std::map / std::multimap",
-        category: "Associative Containers",
-        bgColor: "#00F0FF", // Cyan
-        syntax: "map<string, int> mp;\nmp[\"key\"] = val; mp.find(key);",
-        explanation: "Ordered key-value tree. map has unique keys; multimap permits duplicates.",
-        time: {
-          access: "O(log n)",
-          search: "find O(log n)",
-          insertDelete: "insert/erase O(log n)"
-        },
-        space: "Storage O(n); Aux Space O(1)",
-        opCosts: "find/insert/erase by key O(log n); lower_bound/upper_bound O(log n); mp[key] O(log n) and inserts default value if absent.",
-        keywords: ["key-value lookup", "sorted keys", "frequency table needing order", "predecessor/successor by key"],
-        notes: "Use unordered_map for expected O(1) lookup when ordering is unnecessary. Note: operator[] can accidentally insert missing keys."
-      },
-      {
-        id: "unordered-map",
-        name: "std::unordered_set / std::unordered_map",
-        category: "Associative Containers",
-        bgColor: "#00FF66", // Lime
-        syntax: "unordered_set<int> seen;\nunordered_map<string, int> freq;",
-        explanation: "Hash-table containers for membership or key-value lookup without sorted order.",
-        time: {
-          access: "Expected O(1) / Worst O(n)",
-          search: "Avg O(1), Worst O(n)",
-          insertDelete: "Avg O(1), Worst O(n)"
-        },
-        space: "Storage O(n); Rehash temporary extra O(n)",
-        opCosts: "Average/expected find/insert/erase O(1); Worst-case O(n); Rehash O(n); iteration order is unspecified.",
-        keywords: ["fast lookup", "membership", "duplicate detection", "frequency counting", "complement lookup"],
-        notes: "Hashing gives expected, not guaranteed worst-case, constant time. Reserve capacity for large workloads. Iterators invalidated on rehash."
+        space: "Storage O(n) (chunked buffers)",
+        opCosts: "Random access by index O(1); push_front / push_back / pop_front / pop_back O(1).",
+        keywords: ["both ends", "sliding window maximum", "0-1 BFS", "push front and back"],
+        notes: "Better performance than vector when frequent insertions at the front are needed."
       },
       {
         id: "bst",
         name: "Binary Search Tree (BST)",
-        category: "Trees & Advanced",
-        bgColor: "#FF9770", // Orange
-        syntax: "struct Node {\n  int key;\n  Node *left, *right;\n};",
-        explanation: "Each node's left subtree has smaller keys and right subtree larger keys.",
+        category: "Trees",
+        bgColor: "#FFE600", // Yellow
+        syntax: "struct TreeNode {\n  int val;\n  TreeNode *left, *right;\n};",
+        explanation: "Tree where left subtree nodes < parent and right subtree nodes > parent.",
         time: {
-          access: "O(h) -> Balanced O(log n), Skewed O(n)",
-          search: "O(h)",
+          access: "O(h)",
+          search: "Balanced O(log n) / Skewed O(n)",
           insertDelete: "O(h)"
         },
-        space: "Storage O(n); Recursive stack O(h)",
-        opCosts: "Search/insert/delete O(h); balanced O(log n), skewed worst-case O(n). Inorder traversal O(n).",
-        keywords: ["sorted search", "ordered traversal", "predecessor/successor", "dynamic ordered set"],
-        notes: "A plain BST is not automatically balanced. For reliable bounds, use std::set/map or a self-balancing tree (AVL/Red-Black)."
+        space: "Storage O(n); Recursion Stack O(h)",
+        opCosts: "Search/insert/delete O(h) where h is height. Inorder traversal yields sorted sequence.",
+        keywords: ["sorted traversal", "binary search", "predecessor", "successor", "tree height"],
+        notes: "Unbalanced BST can degrade to a skewed linked list with O(n) time complexity."
+      },
+      {
+        id: "bbst",
+        name: "Balanced BST (std::set / std::map)",
+        category: "Trees",
+        bgColor: "#00F0FF", // Cyan
+        syntax: "set<int> s; // Self-balancing Red-Black Tree\ns.insert(x); s.find(x);",
+        explanation: "Self-balancing binary tree (e.g. Red-Black or AVL tree) keeping height strictly O(log n).",
+        time: {
+          access: "O(log n)",
+          search: "O(log n)",
+          insertDelete: "O(log n)"
+        },
+        space: "Storage O(n); Aux Space O(1)",
+        opCosts: "Insert/erase/find guaranteed O(log n). lower_bound and upper_bound in O(log n).",
+        keywords: ["guaranteed O(log n)", "ordered keys", "lower_bound", "upper_bound", "range search"],
+        notes: "Underlying implementation of standard C++ set, map, multiset, multimap."
+      },
+      {
+        id: "heap",
+        name: "Heap / Priority Queue (std::priority_queue)",
+        category: "Trees",
+        bgColor: "#FF70A6", // Hot Pink
+        syntax: "priority_queue<int> pq; // Max-heap\npq.push(x); pq.top(); pq.pop();\n// Min-heap:\npriority_queue<int, vector<int>, greater<int>> min_pq;",
+        explanation: "Complete binary tree satisfying heap property; fast extraction of minimum or maximum item.",
+        time: {
+          access: "Top O(1)",
+          search: "O(n)",
+          insertDelete: "push O(log n); pop O(log n); build O(n)"
+        },
+        space: "Storage O(n)",
+        opCosts: "Get top extremum O(1); Insert push O(log n); Remove top pop O(log n); Build heap range O(n).",
+        keywords: ["top k", "kth largest", "repeated min/max", "Dijkstra", "scheduling"],
+        notes: "Default std::priority_queue is MAX-HEAP. To remove arbitrary non-top items, standard heap is inefficient."
       },
       {
         id: "trie",
-        name: "Trie (prefix tree)",
-        category: "Trees & Advanced",
+        name: "Trie (Prefix Tree)",
+        category: "Trees",
         bgColor: "#D6C7FF", // Lavender
         syntax: "struct TrieNode {\n  TrieNode* child[26];\n  bool isEnd = false;\n};",
-        explanation: "Stores strings by shared prefixes; each edge represents a character.",
+        explanation: "Tree for storing strings character-by-character along branches sharing prefixes.",
         time: {
-          access: "O(L) key length",
+          access: "O(L) string length",
           search: "O(L)",
           insertDelete: "O(L)"
         },
-        space: "Nodes O(total characters); array[26] uses O(26·nodes)",
-        opCosts: "Insert/search/prefix check O(L); delete O(L) plus optional pruning; costs depend on alphabet size.",
-        keywords: ["prefix", "autocomplete", "dictionary", "starts with", "many words sharing prefixes"],
-        notes: "For lowercase English use 26 slots; for general characters use an unordered_map per node. Arrays are faster but consume memory."
+        space: "Storage O(Alphabet_Size * Total_Chars)",
+        opCosts: "Insert, search, and prefix matching in O(L) where L is string length.",
+        keywords: ["prefix", "autocomplete", "dictionary", "starts with", "word lookup"],
+        notes: "For lowercase letters use array of 26 pointers. For general characters, map children can be used."
       },
       {
         id: "graph-adj-list",
-        name: "Graph (adjacency list)",
-        category: "Graphs & Networks",
-        bgColor: "#FFD670", // Gold
+        name: "Graph (Adjacency List)",
+        category: "Graphs",
+        bgColor: "#FF9770", // Light Orange
         syntax: "vector<vector<int>> adj(V);\nadj[u].push_back(v);",
-        explanation: "Represents vertices & edges; adjacency list stores each vertex's neighbors.",
+        explanation: "Graph representation where each vertex stores a list of its outgoing neighbors.",
         time: {
-          access: "Edge test O(degree(u))",
+          access: "Edge query O(degree(u))",
           search: "BFS/DFS O(V + E)",
-          insertDelete: "Add edge O(1) amortized"
+          insertDelete: "Add edge O(1)"
         },
-        space: "Storage O(V + E); BFS/DFS Aux O(V)",
-        opCosts: "Add edge O(1) amortized; test edge (u,v) O(degree(u)); BFS/DFS O(V + E).",
-        keywords: ["network", "routes", "dependencies", "connections", "path", "cycle", "components", "prerequisites"],
-        notes: "Directed vs undirected matters. For undirected edges, add both directions. Weighted graph: store pairs vector<vector<pair<int,int>>>."
+        space: "Storage O(V + E)",
+        opCosts: "Add edge O(1); Traversal (BFS/DFS) O(V + E); Check specific edge O(degree(u)).",
+        keywords: ["sparse graph", "neighbors list", "BFS", "DFS", "network", "connectivity"],
+        notes: "Optimal representation for sparse graphs (E << V²). For weighted graphs, store pair<int,int>."
       },
       {
         id: "graph-adj-matrix",
-        name: "Graph (adjacency matrix)",
-        category: "Graphs & Networks",
-        bgColor: "#70D6FF", // Soft Blue
-        syntax: "vector<vector<bool>> adj(V, vector<bool>(V, false));",
-        explanation: "A V×V table records whether an edge exists between two vertices.",
+        name: "Graph (Adjacency Matrix)",
+        category: "Graphs",
+        bgColor: "#00FF66", // Lime Green
+        syntax: "vector<vector<bool>> adj(V, vector<bool>(V, false));\nadj[u][v] = true;",
+        explanation: "2D matrix of size V×V indicating whether an edge exists between vertex u and v.",
         time: {
-          access: "Test edge O(1)",
+          access: "Edge lookup O(1)",
           search: "BFS/DFS O(V²)",
           insertDelete: "Add/remove edge O(1)"
         },
-        space: "Storage O(V²); Traversal Aux O(V)",
-        opCosts: "Test/add/remove edge O(1); Enumerate neighbors O(V); BFS/DFS O(V²).",
-        keywords: ["dense graph", "constant-time edge check", "small number of vertices"],
-        notes: "Use adjacency lists for sparse graphs; matrices waste memory when E is much smaller than V²."
+        space: "Storage O(V²)",
+        opCosts: "Constant O(1) edge lookup & update; Enumerating all neighbors takes O(V) time per vertex.",
+        keywords: ["dense graph", "O(1) edge lookup", "small V", "matrix"],
+        notes: "Consumes O(V²) space regardless of edge count. Inefficient for sparse graphs."
+      },
+      {
+        id: "ordered-map",
+        name: "Ordered Map (std::map)",
+        category: "Maps",
+        bgColor: "#00F0FF", // Cyan
+        syntax: "map<string, int> mp;\nmp[\"key\"] = val;\nauto it = mp.find(\"key\");",
+        explanation: "Key-value container backed by a Red-Black Tree; keys are maintained in sorted order.",
+        time: {
+          access: "O(log n)",
+          search: "O(log n)",
+          insertDelete: "O(log n)"
+        },
+        space: "Storage O(n)",
+        opCosts: "Insert/erase/find in O(log n); Order-preserving iteration in O(n); supports lower_bound.",
+        keywords: ["sorted keys", "key-value", "logarithmic", "predecessor/successor"],
+        notes: "Operator [] inserts key with default value if missing. Use find() for read-only lookups."
+      },
+      {
+        id: "unordered-map",
+        name: "Unordered Map (std::unordered_map)",
+        category: "Maps",
+        bgColor: "#FFE600", // Yellow
+        syntax: "unordered_map<string, int> um;\num[\"key\"] = val;\nif(um.count(\"key\")) { ... }",
+        explanation: "Key-value hash table container providing average constant-time lookups.",
+        time: {
+          access: "Average O(1) / Worst O(n)",
+          search: "Average O(1) / Worst O(n)",
+          insertDelete: "Average O(1) / Worst O(n)"
+        },
+        space: "Storage O(n)",
+        opCosts: "Average case find/insert/erase O(1); Worst-case O(n) due to hash collisions.",
+        keywords: ["fast lookup", "hash table", "frequency count", "unordered key-value"],
+        notes: "No sorted key ordering. Rehashes when load factor exceeds threshold."
+      }
+    ];
+
+    const MOST_ASKED_ALGORITHMS = [
+      {
+        id: "carry-forward",
+        name: "Carry Forward",
+        category: "Array Techniques",
+        bgColor: "#FFE600",
+        english: "Maintains running information (such as minimums, maximums, or counts) while iterating through an array in a single pass to eliminate redundant nested loops.",
+        complexity: { time: "O(n)", space: "O(1)" },
+        clues: ["count pairs (i, j) with i < j", "running min/max from left/right", "buy and sell stock"],
+        pseudocode: `CARRY-FORWARD(A):
+  n = length(A)
+  count = 0, count_A = 0
+  for i = 0 to n - 1:
+    if A[i] == 'A':
+      count_A += 1
+    else if A[i] == 'B':
+      count += count_A  // Carry forward count of 'A'
+  return count`
+      },
+      {
+        id: "prefix-sum",
+        name: "Prefix Sum",
+        category: "Array Techniques",
+        bgColor: "#00F0FF",
+        english: "Precomputes cumulative sum array where prefix[i] stores sum of elements up to index i-1. Allows range sum queries [L, R] to be answered in constant O(1) time.",
+        complexity: { time: "Build O(n), Query O(1)", space: "O(n)" },
+        clues: ["multiple range sum queries", "subarray sum equals k", "static array queries"],
+        pseudocode: `BUILD-PREFIX(A):
+  P = array of size n + 1, P[0] = 0
+  for i = 0 to n - 1:
+    P[i + 1] = P[i] + A[i]
+  return P
+
+QUERY-RANGE(P, L, R):
+  return P[R + 1] - P[L]`
+      },
+      {
+        id: "linear-search",
+        name: "Linear Search",
+        category: "Searching",
+        bgColor: "#70D6FF",
+        english: "Scans each element sequentially from start to end until target element is found or list finishes.",
+        complexity: { time: "O(n)", space: "O(1)" },
+        clues: ["unsorted array search", "find first occurrence", "small dataset"],
+        pseudocode: `LINEAR-SEARCH(A, target):
+  for i = 0 to length(A) - 1:
+    if A[i] == target:
+      return i
+  return -1`
+      },
+      {
+        id: "binary-search",
+        name: "Binary Search",
+        category: "Searching",
+        bgColor: "#00FF66",
+        english: "Repeatedly divides a sorted search interval in half. Compares target with middle element and eliminates half of remaining elements.",
+        complexity: { time: "O(log n)", space: "O(1)" },
+        clues: ["sorted array search", "search in rotated sorted array", "lower / upper bound", "binary search on answer"],
+        pseudocode: `BINARY-SEARCH(A, target):
+  low = 0, high = length(A) - 1
+  while low <= high:
+    mid = low + (high - low) / 2
+    if A[mid] == target:
+      return mid
+    else if A[mid] < target:
+      low = mid + 1
+    else:
+      high = mid - 1
+  return -1`
+      },
+      {
+        id: "two-pointers",
+        name: "Two Pointers",
+        category: "Array Techniques",
+        bgColor: "#FF9770",
+        english: "Uses two indices (often start and end, or fast and slow) moving in coordinated fashion through a sorted sequence to process pairs or subsegments in linear time.",
+        complexity: { time: "O(n)", space: "O(1)" },
+        clues: ["sorted array pair sum", "container with most water", "palindrome verification", "remove duplicates in-place"],
+        pseudocode: `TWO-POINTER-PAIR-SUM(A, target):
+  left = 0, right = length(A) - 1
+  while left < right:
+    current_sum = A[left] + A[right]
+    if current_sum == target:
+      return (left, right)
+    else if current_sum < target:
+      left += 1
+    else:
+      right -= 1
+  return NOT_FOUND`
+      },
+      {
+        id: "sliding-window",
+        name: "Sliding Window",
+        category: "Array Techniques",
+        bgColor: "#FFD670",
+        english: "Maintains a window (range) over contiguous elements and shifts window boundaries dynamically to calculate optimum subsegment metrics without recalculating overlapping items.",
+        complexity: { time: "O(n)", space: "O(1) to O(k)" },
+        clues: ["max sum subarray of size k", "longest substring without repeating chars", "minimum size subarray sum"],
+        pseudocode: `FIXED-SLIDING-WINDOW(A, k):
+  window_sum = sum of first k elements
+  max_sum = window_sum
+  for i = k to length(A) - 1:
+    window_sum += A[i] - A[i - k]
+    max_sum = max(max_sum, window_sum)
+  return max_sum`
+      },
+      {
+        id: "kadane",
+        name: "Kadane’s Algorithm",
+        category: "Array Techniques",
+        bgColor: "#FF70A6",
+        english: "Computes maximum sum contiguous subarray by maintaining current max sum ending at index i, resetting current sum to 0 whenever it drops below zero.",
+        complexity: { time: "O(n)", space: "O(1)" },
+        clues: ["maximum subarray sum", "contiguous subarray", "stock profit with negative numbers"],
+        pseudocode: `KADANES-ALGORITHM(A):
+  max_so_far = A[0]
+  current_max = A[0]
+  for i = 1 to length(A) - 1:
+    current_max = max(A[i], current_max + A[i])
+    max_so_far = max(max_so_far, current_max)
+  return max_so_far`
+      },
+      {
+        id: "merge-sort",
+        name: "Merge Sort",
+        category: "Sorting",
+        bgColor: "#D6C7FF",
+        english: "Divide-and-conquer sorting algorithm that recursively splits array into halves, sorts each half, and merges two sorted halves.",
+        complexity: { time: "O(n log n) all cases", space: "O(n)" },
+        clues: ["guaranteed O(n log n)", "stable sort", "count inversions", "linked list sorting"],
+        pseudocode: `MERGE-SORT(A):
+  if length(A) <= 1: return A
+  mid = length(A) / 2
+  left = MERGE-SORT(A[0...mid-1])
+  right = MERGE-SORT(A[mid...end])
+  return MERGE(left, right)`
+      },
+      {
+        id: "quick-sort",
+        name: "Quick Sort",
+        category: "Sorting",
+        bgColor: "#00F0FF",
+        english: "Selects a pivot element, partitions array such that elements smaller than pivot are left and greater are right, then recursively sorts partitions.",
+        complexity: { time: "Average O(n log n) / Worst O(n²)", space: "O(log n) stack" },
+        clues: ["in-place sorting", "partition algorithm", "kth smallest quickselect"],
+        pseudocode: `QUICK-SORT(A, low, high):
+  if low < high:
+    pivot_idx = PARTITION(A, low, high)
+    QUICK-SORT(A, low, pivot_idx - 1)
+    QUICK-SORT(A, pivot_idx + 1, high)`
+      },
+      {
+        id: "bfs",
+        name: "Breadth-First Search (BFS)",
+        category: "Graphs",
+        bgColor: "#00FF66",
+        english: "Explores graph level-by-level starting from source vertex using a queue. Guarantees finding shortest path in unweighted graphs.",
+        complexity: { time: "O(V + E)", space: "O(V)" },
+        clues: ["unweighted shortest path", "level order traversal", "minimum steps", "connected components"],
+        pseudocode: `BFS(graph, start):
+  visited = set(), queue = Queue()
+  visited.add(start)
+  queue.enqueue(start)
+  while queue not empty:
+    node = queue.dequeue()
+    for neighbor in graph[node]:
+      if neighbor not in visited:
+        visited.add(neighbor)
+        queue.enqueue(neighbor)`
+      },
+      {
+        id: "dfs",
+        name: "Depth-First Search (DFS)",
+        category: "Graphs",
+        bgColor: "#FF9770",
+        english: "Explores as deep as possible along each branch before backtracking using recursion or an explicit stack.",
+        complexity: { time: "O(V + E)", space: "O(V)" },
+        clues: ["path existence", "cycle detection", "topological order", "maze solving", "connected components"],
+        pseudocode: `DFS(graph, node, visited):
+  visited.add(node)
+  for neighbor in graph[node]:
+    if neighbor not in visited:
+      DFS(graph, neighbor, visited)`
+      },
+      {
+        id: "dijkstra",
+        name: "Dijkstra’s Shortest Path",
+        category: "Graphs",
+        bgColor: "#FFE600",
+        english: "Finds shortest distances from single source vertex to all other vertices in non-negative edge weighted graph using min-priority queue.",
+        complexity: { time: "O((V + E) log V)", space: "O(V)" },
+        clues: ["weighted shortest path", "non-negative weights", "minimum cost route"],
+        pseudocode: `DIJKSTRA(graph, source):
+  dist = map with infinity, dist[source] = 0
+  pq = MinPriorityQueue()
+  pq.push((0, source))
+  while pq not empty:
+    (d, u) = pq.pop()
+    if d > dist[u]: continue
+    for (v, weight) in graph[u]:
+      if dist[u] + weight < dist[v]:
+        dist[v] = dist[u] + weight
+        pq.push((dist[v], v))
+  return dist`
+      },
+      {
+        id: "topological-sort",
+        name: "Topological Sort (Kahn’s Algo)",
+        category: "Graphs",
+        bgColor: "#70D6FF",
+        english: "Linear ordering of vertices in Directed Acyclic Graph (DAG) such that for every directed edge u -> v, vertex u comes before v.",
+        complexity: { time: "O(V + E)", space: "O(V)" },
+        clues: ["course prerequisites", "task dependencies", "DAG scheduling", "detect cycle in directed graph"],
+        pseudocode: `TOPOLOGICAL-SORT(graph):
+  indegree = compute in-degrees for all vertices
+  queue = Queue containing all vertices with indegree 0
+  order = []
+  while queue not empty:
+    u = queue.dequeue()
+    order.append(u)
+    for v in graph[u]:
+      indegree[v] -= 1
+      if indegree[v] == 0: queue.enqueue(v)
+  return order if length(order) == V else CYCLE_DETECTED`
       },
       {
         id: "dsu",
         name: "Disjoint Set Union (DSU / Union-Find)",
-        category: "Trees & Advanced",
-        bgColor: "#FFE600", // Yellow
-        syntax: "vector<int> parent(n), sz(n, 1);\nint find(int i) { return parent[i] == i ? i : parent[i] = find(parent[i]); }",
-        explanation: "Tracks connected components while merging sets efficiently.",
-        time: {
-          access: "Find O(α(n)) amortized",
-          search: "O(α(n))",
-          insertDelete: "Unite O(α(n)) amortized"
-        },
-        space: "Storage O(n); Aux Space O(1) iterative",
-        opCosts: "find/unite amortized O(α(n)) with path compression + union by size/rank; worst-case without optimizations is O(n).",
-        keywords: ["connected components under added edges", "merge groups", "Kruskal MST", "connectivity queries"],
-        notes: "Use both path compression and union by size/rank. DSU does not efficiently handle arbitrary edge deletions."
+        category: "Connectivity",
+        bgColor: "#FFD670",
+        english: "Tracks partition of set into disjoint subsets. Supports efficient Union (merge sets) and Find (identify representative) using Path Compression and Union by Rank.",
+        complexity: { time: "Amortized O(α(n))", space: "O(n)" },
+        clues: ["dynamic connectivity", "redundant connection", "kruskal MST", "grouping items"],
+        pseudocode: `FIND(i):
+  if parent[i] == i: return i
+  parent[i] = FIND(parent[i]) // Path Compression
+  return parent[i]
+
+UNION(i, j):
+  root_i = FIND(i), root_j = FIND(j)
+  if root_i != root_j:
+    parent[root_i] = root_j // Union`
       },
       {
-        id: "fenwick",
-        name: "Fenwick Tree (Binary Indexed Tree)",
-        category: "Range Queries",
-        bgColor: "#00F0FF", // Cyan
-        syntax: "vector<long long> bit(n + 1);\nvoid add(int idx, int val);\nlong long query(int idx);",
-        explanation: "Compact structure for prefix sums and point updates.",
-        time: {
-          access: "Prefix sum O(log n)",
-          search: "Range sum O(log n)",
-          insertDelete: "Point update O(log n)"
-        },
-        space: "Storage O(n); Operation Aux Space O(1)",
-        opCosts: "Point update O(log n); prefix sum O(log n); range sum O(log n); build O(n) or O(n log n).",
-        keywords: ["prefix sum", "point update", "cumulative frequency", "inversion counting"],
-        notes: "Typically uses 1-based indices. Range sum [l, r] = query(r) - query(l - 1). Best for sums/counts, not arbitrary range minimums."
+        id: "kruskal",
+        name: "Kruskal’s Minimum Spanning Tree",
+        category: "Connectivity",
+        bgColor: "#D6C7FF",
+        english: "Greedy algorithm that builds MST by sorting all edges by weight and adding edge to tree if it does not form a cycle (checked via DSU).",
+        complexity: { time: "O(E log E)", space: "O(V + E)" },
+        clues: ["minimum spanning tree", "connect all cities at min cost", "undirected weighted graph"],
+        pseudocode: `KRUSKAL(V, edges):
+  sort edges by weight ascending
+  dsu = DSU(V)
+  mst = []
+  for (u, v, weight) in edges:
+    if dsu.FIND(u) != dsu.FIND(v):
+      dsu.UNION(u, v)
+      mst.append((u, v, weight))
+  return mst`
       },
       {
-        id: "segment-tree",
-        name: "Segment Tree",
-        category: "Range Queries",
-        bgColor: "#00FF66", // Lime
-        syntax: "vector<long long> seg(4 * n);\n// build(1, 0, n-1), query(1, 0, n-1, l, r), update(...)",
-        explanation: "Tree over intervals; combines information for dynamic subranges.",
-        time: {
-          access: "Range query O(log n)",
-          search: "Range query O(log n)",
-          insertDelete: "Point/range update O(log n)"
-        },
-        space: "Storage O(n) (allocate 4n); Stack O(log n)",
-        opCosts: "Build O(n); point update O(log n); range query O(log n). Lazy propagation supports range updates in O(log n).",
-        keywords: ["range query", "range minimum/maximum/sum", "point update", "range update", "dynamic intervals"],
-        notes: "Choose an associative merge operation (e.g. sum, min, max). Lazy propagation is needed for range updates."
+        id: "top-k",
+        name: "Top-K using Heap",
+        category: "Selection",
+        bgColor: "#FF70A6",
+        english: "Maintains a heap of size K to efficiently track the top K largest or smallest elements in stream/array without sorting entire dataset.",
+        complexity: { time: "O(n log k)", space: "O(k)" },
+        clues: ["kth largest element", "top k frequent elements", "streaming top k"],
+        pseudocode: `TOP-K-LARGEST(A, k):
+  min_heap = MinHeap()
+  for item in A:
+    min_heap.push(item)
+    if min_heap.size() > k:
+      min_heap.pop()
+  return min_heap.elements()`
       },
       {
-        id: "sparse-table",
-        name: "Sparse Table",
-        category: "Range Queries",
-        bgColor: "#FF70A6", // Hot Pink
-        syntax: "vector<vector<int>> st;\n// query min: min(st[i][k], st[j - (1<<k) + 1][k])",
-        explanation: "Precomputes answers for fixed array ranges; ideal for static RMQ.",
-        time: {
-          access: "Query O(1)",
-          search: "Query O(1) idempotent",
-          insertDelete: "Build O(n log n); updates slow"
-        },
-        space: "Storage O(n log n); Query Aux Space O(1)",
-        opCosts: "Build O(n log n); query O(1) for idempotent operations (min/max/gcd); updates require rebuild.",
-        keywords: ["static array", "many range minimum queries", "no updates", "RMQ"],
-        notes: "The O(1) overlapping-block trick relies on idempotent operations. For range sum, overlapping blocks double-count!"
+        id: "backtracking",
+        name: "Backtracking",
+        category: "Problem Solving",
+        bgColor: "#00F0FF",
+        english: "Systematic depth-first search strategy that builds candidates incrementally and abandons (backtracks) a candidate as soon as it determines it cannot be valid solution.",
+        complexity: { time: "O(2ⁿ) or O(n!) exponential", space: "O(depth)" },
+        clues: ["generate all permutations", "subsets / combinations", "N-Queens", "Sudoku solver"],
+        pseudocode: `BACKTRACK(state):
+  if IS-SOLUTION(state):
+    RECORD(state); return
+  for choice in VALID-CHOICES(state):
+    APPLY(choice, state)
+    BACKTRACK(state)
+    UNDO(choice, state) // Backtrack`
       },
       {
-        id: "monotonic-pattern",
-        name: "Monotonic stack / queue pattern",
-        category: "Algorithmic Patterns",
-        bgColor: "#FF9770", // Orange
-        syntax: "stack<int> st; // stores indices with monotonic values\ndeque<int> dq; // sliding window extrema",
-        explanation: "A technique using a stack/deque kept in increasing or decreasing order.",
-        time: {
-          access: "O(1) amortized per item",
-          search: "O(n) total across array",
-          insertDelete: "Push/pop each element at most once"
-        },
-        space: "Aux Space O(n) worst-case",
-        opCosts: "Often O(n) total for next greater/smaller element and sliding-window extrema.",
-        keywords: ["next greater/smaller", "nearest greater", "histogram rectangle", "sliding window maximum", "stock span"],
-        notes: "This is a algorithmic pattern built using stack/deque, not a unique STL container. Store indices to calculate window distances."
+        id: "dp",
+        name: "Dynamic Programming (DP)",
+        category: "Problem Solving",
+        bgColor: "#00FF66",
+        english: "Solves complex optimization problems with overlapping subproblems and optimal substructure by caching computed subproblem results (Memoization / Tabulation).",
+        complexity: { time: "O(States * Transitions)", space: "O(States)" },
+        clues: ["min / max cost", "number of ways", "0/1 knapsack", "longest common subsequence", "coin change"],
+        pseudocode: `DP-TABULATION(n):
+  dp = table of size n + 1 initialized with base cases
+  for i = base_case to n:
+    dp[i] = OPTIMAL_COMBINATION(dp[subproblems])
+  return dp[n]`
       },
       {
-        id: "hashing-freq",
-        name: "Hashing / frequency array",
-        category: "Algorithmic Patterns",
-        bgColor: "#D6C7FF", // Lavender
-        syntax: "vector<int> freq(U, 0);\nunordered_map<int, int> freq_map;",
-        explanation: "Counts occurrences or maps values to compact counts.",
-        time: {
-          access: "Array O(1) / Map Avg O(1)",
-          search: "O(1)",
-          insertDelete: "O(1)"
-        },
-        space: "Array O(U); Map O(k) for k distinct keys",
-        opCosts: "Frequency array update/query O(1), initialize O(U). Hash map update/query average O(1), worst-case O(n).",
-        keywords: ["frequency", "count occurrences", "anagrams", "duplicates", "pair sum", "limited value range"],
-        notes: "Use a frequency array when value range U is small and known. Use a hash map for sparse or huge value domains."
+        id: "greedy",
+        name: "Greedy Algorithms",
+        category: "Problem Solving",
+        bgColor: "#FFE600",
+        english: "Makes locally optimal choice at each step hoping to reach a globally optimal solution. Requires Greedy Choice Property and Optimal Substructure.",
+        complexity: { time: "Usually O(n log n) due to sorting", space: "O(1) to O(n)" },
+        clues: ["interval scheduling / meeting rooms", "fractional knapsack", "gas station circuit", "huffman coding"],
+        pseudocode: `GREEDY-ACTIVITY-SELECTION(activities):
+  sort activities by end_time ascending
+  selected = [activities[0]]
+  last_end = activities[0].end_time
+  for act in activities[1...end]:
+    if act.start_time >= last_end:
+      selected.append(act)
+      last_end = act.end_time
+  return selected`
       }
     ];
 
     const CHEAT_SHEET_ROWS = [
-      { op: "Access by index", struct: "array, vector, string, deque", cost: "O(1)", tag: "green", watch: "Not supported by list, set, map, stack, queue." },
-      { op: "Append at end", struct: "vector", cost: "Amortized O(1)", tag: "green", watch: "A resize/reallocation can make one append O(n)." },
-      { op: "Insert/delete at known position", struct: "list", cost: "O(1) with iterator", tag: "green", watch: "Finding the position may still take O(n)." },
-      { op: "Membership / key lookup", struct: "unordered_set / map", cost: "Average O(1), Worst O(n)", tag: "yellow", watch: "Use set/map for ordered keys & O(log n) guarantees." },
-      { op: "Maintain sorted unique values", struct: "set", cost: "O(log n) insert/find/erase", tag: "blue", watch: "Duplicates removed; use multiset if duplicates matter." },
-      { op: "Repeated min/max", struct: "priority_queue", cost: "top O(1), push/pop O(log n)", tag: "blue", watch: "Default priority_queue is a max-heap." },
-      { op: "FIFO / LIFO", struct: "queue / stack", cost: "Core operations O(1)", tag: "green", watch: "BFS usually uses queue; DFS uses recursion or stack." },
-      { op: "Range sum + point update", struct: "Fenwick tree", cost: "O(log n)", tag: "blue", watch: "Usually 1-indexed; range sum via prefix differences." },
-      { op: "Flexible range query/update", struct: "Segment tree", cost: "O(log n) per query/update", tag: "blue", watch: "Lazy propagation required for range updates." },
-      { op: "Static range min/max", struct: "Sparse table", cost: "O(1) query, O(n log n) build", tag: "green", watch: "Best when the array does not change." },
-      { op: "Dynamic connectivity / groups", struct: "DSU", cost: "Amortized O(α(n))", tag: "green", watch: "Great for incremental merges; no arbitrary edge deletion." },
-      { op: "Unweighted shortest path", struct: "Graph + BFS queue", cost: "O(V + E) with adj list", tag: "orange", watch: "Weighted shortest paths need Dijkstra or Bellman-Ford." },
-      { op: "Prefix matching (words)", struct: "Trie", cost: "O(L) per word/query", tag: "purple", watch: "Can use substantial memory depending on alphabet." }
+      { op: "Random Access by Index", struct: "vector, deque", cost: "O(1)", tag: "green", watch: "Not supported by list, set, map, stack, queue." },
+      { op: "Append / Pop Back", struct: "vector, deque", cost: "Amortized O(1)", tag: "green", watch: "Vector dynamic resize costs O(n) occasionally." },
+      { op: "Push / Pop Front", struct: "deque, list", cost: "O(1)", tag: "green", watch: "vector::insert at index 0 costs O(n)." },
+      { op: "Insert / Erase at known position", struct: "list", cost: "O(1) with iterator", tag: "green", watch: "Finding iterator position requires O(n) search." },
+      { op: "LIFO Operations (push/top/pop)", struct: "stack", cost: "O(1)", tag: "green", watch: "No index or iteration access allowed." },
+      { op: "FIFO Operations (push/front/pop)", struct: "queue", cost: "O(1)", tag: "green", watch: "Supports only front/back access." },
+      { op: "Guaranteed O(log n) Key Operations", struct: "std::set, std::map (BBST)", cost: "O(log n)", tag: "blue", watch: "Maintains sorted key order." },
+      { op: "Average O(1) Key Operations", struct: "std::unordered_map", cost: "Avg O(1), Worst O(n)", tag: "yellow", watch: "Unordered key distribution; worst-case on collisions." },
+      { op: "Top Extremum (Min / Max)", struct: "std::priority_queue (Heap)", cost: "O(1) top, O(log n) push/pop", tag: "purple", watch: "Default C++ priority queue is max-heap." },
+      { op: "Prefix Character Lookup", struct: "Trie", cost: "O(L) per key", tag: "purple", watch: "Consumes memory proportional to node branches." },
+      { op: "Graph Neighbors Traversal (Sparse)", struct: "Adjacency List", cost: "O(V + E) for BFS/DFS", tag: "orange", watch: "Preferred over matrix for sparse graphs." },
+      { op: "Graph Edge Existence Check", struct: "Adjacency Matrix", cost: "O(1)", tag: "green", watch: "Consumes O(V²) space." }
     ];
 
-    const CATEGORIES = ["All", "Sequence Containers", "Adapters & Stacks", "Associative Containers", "Trees & Advanced", "Graphs & Networks", "Range Queries", "Algorithmic Patterns"];
-
-    // Main App Component
     function App() {
+      const [mainTab, setMainTab] = useState("ds"); // 'ds' | 'algo' | 'matrix' | 'rules'
       const [search, setSearch] = useState("");
-      const [selectedCategory, setSelectedCategory] = useState("All");
-      const [activeTab, setActiveTab] = useState("cards"); // 'cards' | 'matrix' | 'rules'
+      const [selectedCat, setSelectedCat] = useState("All");
       const [copiedId, setCopiedId] = useState(null);
 
       const handleCopy = (text, id) => {
-        navigator.clipboard.writeText(text);
+        navigator.execCommand('copy');
         setCopiedId(id);
         setTimeout(() => setCopiedId(null), 2000);
       };
 
-      const filteredItems = useMemo(() => {
-        return DATA_STRUCTURES.filter(item => {
-          const matchesCat = selectedCategory === "All" || item.category === selectedCategory;
-          const query = search.toLowerCase();
-          const matchesSearch = !query || 
-            item.name.toLowerCase().includes(query) ||
-            item.syntax.toLowerCase().includes(query) ||
-            item.explanation.toLowerCase().includes(query) ||
-            item.keywords.some(k => k.toLowerCase().includes(query)) ||
-            item.notes.toLowerCase().includes(query);
+      const dsCategories = ["All", "Sequence Containers", "Linked Lists", "Adapters", "Trees", "Graphs", "Maps"];
+      const algoCategories = ["All", "Array Techniques", "Searching", "Sorting", "Graphs", "Connectivity", "Selection", "Problem Solving"];
+
+      const filteredDS = useMemo(() => {
+        return STRICT_DATA_STRUCTURES.filter(item => {
+          const matchesCat = selectedCat === "All" || item.category === selectedCat;
+          const q = search.toLowerCase();
+          const matchesSearch = !q ||
+            item.name.toLowerCase().includes(q) ||
+            item.syntax.toLowerCase().includes(q) ||
+            item.explanation.toLowerCase().includes(q) ||
+            item.keywords.some(k => k.toLowerCase().includes(q));
           return matchesCat && matchesSearch;
         });
-      }, [search, selectedCategory]);
+      }, [search, selectedCat]);
+
+      const filteredAlgos = useMemo(() => {
+        return MOST_ASKED_ALGORITHMS.filter(algo => {
+          const matchesCat = selectedCat === "All" || algo.category === selectedCat;
+          const q = search.toLowerCase();
+          const matchesSearch = !q ||
+            algo.name.toLowerCase().includes(q) ||
+            algo.english.toLowerCase().includes(q) ||
+            algo.pseudocode.toLowerCase().includes(q) ||
+            algo.clues.some(c => c.toLowerCase().includes(q));
+          return matchesCat && matchesSearch;
+        });
+      }, [search, selectedCat]);
 
       return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           
-          {/* Top Banner Header */}
+          {}
           <header className="mb-8">
             <div className="bg-[#FFE600] neo-box p-6 sm:p-8 relative overflow-hidden">
-              <div className="absolute right-3 top-3 opacity-15 hidden md:block select-none pointer-events-none">
+              <div className="absolute right-4 top-2 opacity-10 hidden md:block select-none pointer-events-none">
                 <span className="text-9xl font-black font-mono">C++</span>
               </div>
               
               <div className="flex flex-wrap items-center justify-between gap-4 relative z-10">
                 <div>
                   <div className="inline-block bg-black text-white px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider mb-2 neo-pill">
-                    ⚡ Interview & Competitive Programming Reference
+                    ⚡ Concise C++ Data Structures & Algorithms Reference
                   </div>
                   <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-black uppercase">
-                    C++ Data Structures <br className="hidden sm:inline" />
+                    C++ DS & Algorithms <br className="hidden sm:inline" />
                     <span className="bg-white px-2 py-0.5 border-2 border-black inline-block mt-1">
-                      & Complexity Guide
+                      Cheat Sheet
                     </span>
                   </h1>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                {/* Navigation Tabs */}
+                <div className="flex flex-wrap gap-2.5">
                   <button 
-                    onClick={() => setActiveTab('cards')}
-                    className={`neo-btn px-4 py-2.5 font-bold flex items-center gap-2 text-sm ${
-                      activeTab === 'cards' ? 'bg-black text-white' : 'bg-white text-black'
+                    onClick={() => { setMainTab('ds'); setSelectedCat('All'); }}
+                    className={`neo-btn px-4 py-2.5 font-extrabold flex items-center gap-2 text-sm uppercase ${
+                      mainTab === 'ds' ? 'bg-black text-white' : 'bg-white text-black'
                     }`}
                   >
-                    <GridIcon /> Reference Cards ({DATA_STRUCTURES.length})
+                    <GridIcon /> Data Structures ({STRICT_DATA_STRUCTURES.length})
                   </button>
                   <button 
-                    onClick={() => setActiveTab('matrix')}
-                    className={`neo-btn px-4 py-2.5 font-bold flex items-center gap-2 text-sm ${
-                      activeTab === 'matrix' ? 'bg-black text-white' : 'bg-white text-black'
+                    onClick={() => { setMainTab('algo'); setSelectedCat('All'); }}
+                    className={`neo-btn px-4 py-2.5 font-extrabold flex items-center gap-2 text-sm uppercase ${
+                      mainTab === 'algo' ? 'bg-black text-white' : 'bg-white text-black'
                     }`}
                   >
-                    <TableIcon /> Operations Matrix
+                    <AlgoIcon /> Algorithms ({MOST_ASKED_ALGORITHMS.length})
                   </button>
                   <button 
-                    onClick={() => setActiveTab('rules')}
-                    className={`neo-btn px-4 py-2.5 font-bold flex items-center gap-2 text-sm ${
-                      activeTab === 'rules' ? 'bg-black text-white' : 'bg-white text-black'
+                    onClick={() => setMainTab('matrix')}
+                    className={`neo-btn px-4 py-2.5 font-extrabold flex items-center gap-2 text-sm uppercase ${
+                      mainTab === 'matrix' ? 'bg-black text-white' : 'bg-white text-black'
+                    }`}
+                  >
+                    <TableIcon /> Complexity Matrix
+                  </button>
+                  <button 
+                    onClick={() => setMainTab('rules')}
+                    className={`neo-btn px-4 py-2.5 font-extrabold flex items-center gap-2 text-sm uppercase ${
+                      mainTab === 'rules' ? 'bg-black text-white' : 'bg-white text-black'
                     }`}
                   >
                     <BookIcon /> Key Rules
                   </button>
                 </div>
               </div>
-
-              {/* Variable Notation Legend */}
-              <div className="mt-6 pt-4 border-t-2 border-black grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-xs font-bold font-mono">
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">n</span> = elements
-                </div>
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">V</span> = vertices
-                </div>
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">E</span> = edges
-                </div>
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">h</span> = tree height
-                </div>
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">L</span> = key length
-                </div>
-                <div className="bg-white p-1.5 border border-black text-center shadow-[2px_2px_0px_0px_#000]">
-                  <span className="text-rose-600 font-extrabold">U</span> = universe size
-                </div>
-              </div>
             </div>
           </header>
 
-          {/* Search & Category Filter Bar */}
-          {activeTab !== 'rules' && (
+          {}
+          {(mainTab === 'ds' || mainTab === 'algo') && (
             <div className="mb-8 space-y-4">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
@@ -640,13 +827,17 @@
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search structure, syntax, keywords (e.g. 'BFS', 'sliding window', 'prefix sum', 'O(1)')..."
-                    className="w-full pl-11 pr-4 py-3 bg-white neo-box font-medium focus:outline-none focus:ring-2 focus:ring-black placeholder-gray-500"
+                    placeholder={
+                      mainTab === 'ds'
+                        ? "Search structures (e.g. 'deque', 'vector', 'BST', 'O(1)')..."
+                        : "Search algorithms (e.g. 'Dijkstra', 'Sliding Window', 'Binary Search')..."
+                    }
+                    className="w-full pl-11 pr-16 py-3 bg-white neo-box font-medium focus:outline-none focus:ring-2 focus:ring-black placeholder-gray-500"
                   />
                   {search && (
                     <button 
                       onClick={() => setSearch("")}
-                      className="absolute right-3 top-3 font-mono font-bold text-xs bg-black text-white px-2 py-1 rounded"
+                      className="absolute right-3 top-2.5 font-mono font-bold text-xs bg-black text-white px-2 py-1.5 rounded neo-pill"
                     >
                       CLEAR
                     </button>
@@ -655,13 +846,13 @@
               </div>
 
               {/* Category Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-                {CATEGORIES.map(cat => (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                {(mainTab === 'ds' ? dsCategories : algoCategories).map(cat => (
                   <button
                     key={cat}
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => setSelectedCat(cat)}
                     className={`px-3 py-1.5 text-xs font-black uppercase whitespace-nowrap neo-pill transition-all ${
-                      selectedCategory === cat 
+                      selectedCat === cat 
                         ? 'bg-black text-white translate-x-[1px] translate-y-[1px] shadow-none' 
                         : 'bg-white text-black hover:bg-yellow-200'
                     }`}
@@ -673,152 +864,194 @@
             </div>
           )}
 
-          {/* MAIN CONTENT AREA */}
-          {activeTab === 'cards' && (
+          {}
+          {mainTab === 'ds' && (
             <main>
-              {filteredItems.length === 0 ? (
-                <div className="bg-white neo-box p-12 text-center my-12">
-                  <AlertIcon />
-                  <h3 className="text-2xl font-black mt-2">No matching data structures found</h3>
-                  <p className="text-gray-600 font-medium mt-1">Try relaxing your search terms or clearing category filters.</p>
-                  <button 
-                    onClick={() => { setSearch(""); setSelectedCategory("All"); }}
-                    className="mt-4 neo-btn px-4 py-2 bg-[#FFE600] font-bold text-sm"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDS.map((item) => (
+                  <div 
+                    key={item.id}
+                    className="bg-white neo-box flex flex-col justify-between overflow-hidden hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
                   >
-                    Reset All Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredItems.map((item) => (
-                    <div 
-                      key={item.id}
-                      className="bg-white neo-box flex flex-col justify-between overflow-hidden hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all"
-                    >
-                      {/* Card Header */}
-                      <div>
-                        <div 
-                          className="p-4 border-b-3 border-black flex items-start justify-between gap-2"
-                          style={{ backgroundColor: item.bgColor }}
-                        >
-                          <div>
-                            <span className="text-[10px] font-mono font-extrabold uppercase bg-black text-white px-2 py-0.5 border border-black inline-block mb-1">
-                              {item.category}
-                            </span>
-                            <h3 className="text-xl font-black text-black tracking-tight leading-tight">
-                              {item.name}
-                            </h3>
-                          </div>
-                          <ZapIcon />
+                    <div>
+                      <div 
+                        className="p-4 border-b-3 border-black flex items-start justify-between gap-2"
+                        style={{ backgroundColor: item.bgColor }}
+                      >
+                        <div>
+                          <span className="text-[10px] font-mono font-extrabold uppercase bg-black text-white px-2 py-0.5 border border-black inline-block mb-1">
+                            {item.category}
+                          </span>
+                          <h3 className="text-xl font-black text-black tracking-tight leading-tight">
+                            {item.name}
+                          </h3>
                         </div>
+                        <ZapIcon />
+                      </div>
 
-                        {/* Explanation */}
-                        <div className="p-4 border-b-2 border-black bg-neutral-50 text-xs font-semibold text-gray-800">
-                          {item.explanation}
+                      <div className="p-4 border-b-2 border-black bg-neutral-50 text-xs font-semibold text-gray-800">
+                        {item.explanation}
+                      </div>
+
+                      <div className="p-4 border-b-2 border-black bg-[#1e1e1e] text-white relative">
+                        <div className="flex justify-between items-center mb-1 text-[10px] font-mono text-gray-400 border-b border-gray-700 pb-1">
+                          <span>C++ SYNTAX</span>
+                          <button
+                            onClick={() => handleCopy(item.syntax, item.id)}
+                            className="text-white hover:text-yellow-400 flex items-center gap-1 bg-gray-800 px-2 py-0.5 rounded border border-gray-600"
+                          >
+                            {copiedId === item.id ? <CheckIcon /> : <CopyIcon />} COPY
+                          </button>
                         </div>
+                        <pre className="font-mono text-xs overflow-x-auto text-green-400 py-1 font-semibold leading-relaxed">
+                          {item.syntax}
+                        </pre>
+                      </div>
 
-                        {/* C++ Code Snippet Box */}
-                        <div className="p-4 border-b-2 border-black bg-[#1e1e1e] text-white relative group">
-                          <div className="flex justify-between items-center mb-1 text-[10px] font-mono text-gray-400 border-b border-gray-700 pb-1">
-                            <span>C++ SYNTAX</span>
-                            <button
-                              onClick={() => handleCopy(item.syntax, item.id)}
-                              className="text-white hover:text-yellow-400 flex items-center gap-1 bg-gray-800 px-2 py-0.5 rounded border border-gray-600"
-                              title="Copy Syntax"
-                            >
-                              {copiedId === item.id ? (
-                                <>
-                                  <CheckIcon /> <span className="text-green-400">COPIED</span>
-                                </>
-                              ) : (
-                                <>
-                                  <CopyIcon /> COPY
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          <pre className="font-mono text-xs overflow-x-auto text-green-400 py-1 font-semibold leading-relaxed">
-                            {item.syntax}
-                          </pre>
+                      <div className="p-4 border-b-2 border-black bg-white space-y-2">
+                        <div className="text-xs font-black uppercase text-black font-mono border-b border-black pb-1">
+                          ⏱️ Operational Complexity
                         </div>
-
-                        {/* Time & Space Matrix Grid */}
-                        <div className="p-4 border-b-2 border-black bg-white space-y-3">
-                          <div className="text-xs font-black uppercase text-black font-mono tracking-wider border-b border-black pb-1">
-                            ⏱️ Complexities Overview
+                        <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                          <div className="bg-neutral-100 p-2 border border-black">
+                            <span className="block text-[10px] text-gray-500 uppercase font-bold">Access / Search</span>
+                            <span className="font-bold text-black">{item.time.access}</span>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="bg-neutral-100 p-2 border border-black">
-                              <span className="block text-[10px] font-mono text-gray-500 uppercase">Access / Search</span>
-                              <span className="font-mono font-bold text-black">{item.time.access}</span>
-                            </div>
-                            <div className="bg-neutral-100 p-2 border border-black">
-                              <span className="block text-[10px] font-mono text-gray-500 uppercase">Insert / Delete</span>
-                              <span className="font-mono font-bold text-black">{item.time.insertDelete}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="text-xs font-mono bg-yellow-50 p-2 border border-black">
-                            <span className="font-bold text-black">Space: </span>
-                            <span className="text-gray-900">{item.space}</span>
-                          </div>
-
-                          <div className="text-xs text-gray-800 font-medium leading-normal bg-neutral-50 p-2 border border-black">
-                            <strong className="text-black font-bold">Details: </strong>
-                            {item.opCosts}
+                          <div className="bg-neutral-100 p-2 border border-black">
+                            <span className="block text-[10px] text-gray-500 uppercase font-bold">Insert / Delete</span>
+                            <span className="font-bold text-black">{item.time.insertDelete}</span>
                           </div>
                         </div>
-
-                        {/* Question Clues / Keywords */}
-                        <div className="p-4 border-b-2 border-black bg-white">
-                          <div className="text-xs font-black uppercase text-black font-mono mb-2">
-                            🔎 Question Clues / Keywords:
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {item.keywords.map(kw => (
-                              <button
-                                key={kw}
-                                onClick={() => setSearch(kw)}
-                                className="text-[11px] font-mono font-bold bg-white text-black px-2 py-0.5 border border-black hover:bg-yellow-300 shadow-[1px_1px_0px_0px_#000]"
-                              >
-                                #{kw}
-                              </button>
-                            ))}
-                          </div>
+                        <div className="text-xs text-gray-800 font-medium bg-neutral-50 p-2 border border-black">
+                          <strong className="text-black font-bold">Details: </strong>
+                          {item.opCosts}
                         </div>
                       </div>
 
-                      {/* Important Notes / Caveats Footer */}
-                      <div className="p-4 bg-amber-100 border-t-2 border-black text-xs font-medium">
-                        <div className="flex items-center gap-1 font-bold text-black uppercase mb-1 font-mono">
-                          <AlertIcon /> Important Caveat
+                      <div className="p-4 bg-white">
+                        <div className="text-xs font-black uppercase text-black font-mono mb-2">
+                          🔎 Clues / Keywords:
                         </div>
-                        <p className="text-black leading-tight">
-                          {item.notes}
-                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {item.keywords.map(kw => (
+                            <button
+                              key={kw}
+                              onClick={() => setSearch(kw)}
+                              className="text-[11px] font-mono font-bold bg-white text-black px-2 py-0.5 border border-black hover:bg-yellow-300 shadow-[1px_1px_0px_0px_#000]"
+                            >
+                              #{kw}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    <div className="p-4 bg-amber-100 border-t-2 border-black text-xs font-medium">
+                      <strong className="text-black uppercase font-mono block mb-0.5 font-bold">💡 Important Caveat:</strong>
+                      {item.notes}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </main>
           )}
 
-          {/* CHEAT SHEET MATRIX TABLE TAB */}
-          {activeTab === 'matrix' && (
+          {}
+          {mainTab === 'algo' && (
+            <main>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredAlgos.map((algo) => (
+                  <div key={algo.id} className="bg-white neo-box flex flex-col justify-between overflow-hidden">
+                    <div>
+                      {/* Header */}
+                      <div 
+                        className="p-4 border-b-3 border-black flex items-center justify-between"
+                        style={{ backgroundColor: algo.bgColor }}
+                      >
+                        <div>
+                          <span className="text-[10px] font-mono font-extrabold uppercase bg-black text-white px-2 py-0.5 border border-black inline-block mb-1">
+                            {algo.category}
+                          </span>
+                          <h3 className="text-2xl font-black text-black uppercase tracking-tight">
+                            {algo.name}
+                          </h3>
+                        </div>
+                        <div className="bg-white border-2 border-black px-2.5 py-1 text-xs font-mono font-bold shadow-[2px_2px_0px_0px_#000]">
+                          Time: {algo.complexity.time}
+                        </div>
+                      </div>
+
+                      {/* Plain English Description */}
+                      <div className="p-4 border-b-2 border-black bg-neutral-50">
+                        <h4 className="text-xs font-mono font-bold uppercase text-black mb-1">
+                          📖 What It Does (In English):
+                        </h4>
+                        <p className="text-xs font-medium text-gray-900 leading-relaxed">
+                          {algo.english}
+                        </p>
+                      </div>
+
+                      {/* Pseudocode Box */}
+                      <div className="p-4 border-b-2 border-black bg-[#1e1e1e] text-white">
+                        <div className="flex justify-between items-center mb-1 text-[10px] font-mono text-gray-400 border-b border-gray-700 pb-1">
+                          <span>PSEUDOCODE</span>
+                          <button
+                            onClick={() => handleCopy(algo.pseudocode, algo.id)}
+                            className="text-white hover:text-yellow-400 flex items-center gap-1 bg-gray-800 px-2 py-0.5 rounded border border-gray-600"
+                          >
+                            {copiedId === algo.id ? <CheckIcon /> : <CopyIcon />} COPY
+                          </button>
+                        </div>
+                        <pre className="font-mono text-xs overflow-x-auto text-yellow-300 py-1 font-semibold leading-relaxed">
+                          {algo.pseudocode}
+                        </pre>
+                      </div>
+
+                      {/* Question Clues */}
+                      <div className="p-4 bg-white">
+                        <h4 className="text-xs font-mono font-bold uppercase text-black mb-2">
+                          🎯 Common Question Clues / Patterns:
+                        </h4>
+                        <div className="flex flex-wrap gap-1.5">
+                          {algo.clues.map(clue => (
+                            <button
+                              key={clue}
+                              onClick={() => setSearch(clue)}
+                              className="text-[11px] font-mono font-bold bg-yellow-100 text-black px-2 py-1 border border-black shadow-[1.5px_1.5px_0px_0px_#000]"
+                            >
+                              💡 {clue}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Complexity Summary Footer */}
+                    <div className="p-3 bg-neutral-100 border-t-2 border-black flex justify-between items-center text-xs font-mono font-bold">
+                      <span>⏱️ Time: <span className="text-rose-600">{algo.complexity.time}</span></span>
+                      <span>💾 Space: <span className="text-blue-600">{algo.complexity.space}</span></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          )}
+
+          {}
+          {mainTab === 'matrix' && (
             <main className="bg-white neo-box p-4 sm:p-6 overflow-x-auto">
               <div className="mb-4">
-                <h2 className="text-2xl font-black uppercase">Operation Complexity Cheat Sheet</h2>
-                <p className="text-sm text-gray-600 font-medium">Quick reference matching standard algorithm tasks to their ideal C++ data structure & Big-O cost.</p>
+                <h2 className="text-2xl font-black uppercase">Operation Complexity Matrix</h2>
+                <p className="text-sm text-gray-600 font-medium">Quick reference matching common algorithm operations to their optimal C++ structure.</p>
               </div>
 
               <table className="w-full text-left border-collapse border-2 border-black font-mono text-xs">
                 <thead>
                   <tr className="bg-[#FFE600] border-b-2 border-black text-black font-extrabold text-sm">
-                    <th className="p-3 border-r-2 border-black">Operation / Pattern</th>
-                    <th className="p-3 border-r-2 border-black">Typical C++ Structure</th>
-                    <th className="p-3 border-r-2 border-black">Typical Cost</th>
-                    <th className="p-3">Watch Out For / Key Details</th>
+                    <th className="p-3 border-r-2 border-black">Operation Requirement</th>
+                    <th className="p-3 border-r-2 border-black">Optimal C++ Structure</th>
+                    <th className="p-3 border-r-2 border-black">Guaranteed Complexity</th>
+                    <th className="p-3">Important Caveat</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y-2 divide-black">
@@ -835,8 +1068,7 @@
                           row.tag === 'green' ? 'bg-green-300 text-black' :
                           row.tag === 'blue' ? 'bg-cyan-200 text-black' :
                           row.tag === 'purple' ? 'bg-purple-200 text-black' :
-                          row.tag === 'yellow' ? 'bg-yellow-200 text-black' :
-                          'bg-orange-200 text-black'
+                          'bg-yellow-200 text-black'
                         }`}>
                           {row.cost}
                         </span>
@@ -851,65 +1083,54 @@
             </main>
           )}
 
-          {/* KEY RULES & GUIDELINES TAB */}
-          {activeTab === 'rules' && (
+          {}
+          {mainTab === 'rules' && (
             <main className="space-y-6">
               <div className="bg-white neo-box p-6 sm:p-8">
                 <h2 className="text-3xl font-black uppercase mb-4 flex items-center gap-2">
-                  <ZapIcon /> Complexity & Correctness Rules
+                  <ZapIcon /> Essential Interview Rules & Trade-Offs
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  
                   <div className="border-2 border-black p-5 bg-yellow-50 neo-box-sm">
                     <h3 className="text-lg font-black uppercase mb-2 text-black border-b-2 border-black pb-1">
-                      1. Big-O & Bound Basics
+                      1. Fast Lookups vs Key Order
                     </h3>
                     <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
-                      <li><strong>Big-O is an upper bound:</strong> It describes worst-case asymptotic scaling unless explicitly specified as average/expected.</li>
-                      <li><strong>Average vs Worst-case:</strong> Hash table operations (<code className="bg-white px-1 border border-black">unordered_map</code>) offer <em>expected</em> O(1) time, but worst-case is O(n) due to collisions. Balanced trees (<code className="bg-white px-1 border border-black">std::set</code>) guarantee worst-case O(log n).</li>
-                      <li><strong>Amortized Time:</strong> Not the same as worst-case! For instance, <code className="bg-white px-1 border border-black">vector::push_back</code> is amortized O(1), but a dynamic array expansion step costs O(n).</li>
+                      <li><strong>Use <code className="bg-white px-1 border border-black">unordered_map</code></strong> when you only need fast O(1) average key lookups and key order does NOT matter.</li>
+                      <li><strong>Use <code className="bg-white px-1 border border-black">std::map</code></strong> when you need keys in sorted order or require <code className="bg-white px-1 border border-black">lower_bound()</code> / range queries.</li>
                     </ul>
                   </div>
 
                   <div className="border-2 border-black p-5 bg-cyan-50 neo-box-sm">
                     <h3 className="text-lg font-black uppercase mb-2 text-black border-b-2 border-black pb-1">
-                      2. Space & Auxiliary Memory
+                      2. Deque vs Vector
                     </h3>
                     <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
-                      <li><strong>Auxiliary Space vs Total Space:</strong> Total space includes data storage O(n). Auxiliary space measures <em>extra</em> memory required by a specific operation algorithm.</li>
-                      <li><strong>Call Stack Space:</strong> Recursive traversals (DFS, BST operations) use implicit system call stack space proportional to depth $O(h)$, which degrades to $O(n)$ in unbalanced/skewed trees.</li>
+                      <li><strong>Vector:</strong> Best cache locality for linear scans; fast random access; push_back is amortized O(1).</li>
+                      <li><strong>Deque:</strong> Supports both <code className="bg-white px-1 border border-black">push_front</code> and <code className="bg-white px-1 border border-black">push_back</code> in O(1) time. Essential for sliding window maximums.</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-2 border-black p-5 bg-emerald-50 neo-box-sm">
+                    <h3 className="text-lg font-black uppercase mb-2 text-black border-b-2 border-black pb-1">
+                      3. Graph Representation Selection
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
+                      <li><strong>Adjacency List:</strong> Always default to this for sparse graphs (E &lt;&lt; V²). Space efficiency O(V + E).</li>
+                      <li><strong>Adjacency Matrix:</strong> Use when V is very small (V ≤ 1000) or when constant-time O(1) edge lookup is required.</li>
                     </ul>
                   </div>
 
                   <div className="border-2 border-black p-5 bg-pink-50 neo-box-sm">
                     <h3 className="text-lg font-black uppercase mb-2 text-black border-b-2 border-black pb-1">
-                      3. Quick Selection Rule
-                    </h3>
-                    <p className="text-sm font-medium leading-relaxed">
-                      First identify the single operation that <strong>MUST</strong> be fast:
-                    </p>
-                    <div className="mt-2 space-y-1 text-xs font-mono">
-                      <div className="bg-white p-2 border border-black">• Index Random Access ➔ <strong>std::vector / Array</strong></div>
-                      <div className="bg-white p-2 border border-black">• Fast Key Lookup ➔ <strong>std::unordered_map</strong></div>
-                      <div className="bg-white p-2 border border-black">• Predecessor / Range Search ➔ <strong>std::set / std::map</strong></div>
-                      <div className="bg-white p-2 border border-black">• Repeated Extremum (Min/Max) ➔ <strong>std::priority_queue</strong></div>
-                      <div className="bg-white p-2 border border-black">• Dynamic Range Sum / Point Update ➔ <strong>Fenwick Tree</strong></div>
-                      <div className="bg-white p-2 border border-black">• Range Query & Lazy Range Update ➔ <strong>Segment Tree</strong></div>
-                    </div>
-                  </div>
-
-                  <div className="border-2 border-black p-5 bg-emerald-50 neo-box-sm">
-                    <h3 className="text-lg font-black uppercase mb-2 text-black border-b-2 border-black pb-1">
-                      4. C++ STL Traps to Avoid
+                      4. Heap Direction
                     </h3>
                     <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
-                      <li><code className="bg-white px-1 border border-black">std::multiset::erase(val)</code> deletes <strong>ALL</strong> occurrences of <code className="bg-white px-1 border border-black">val</code>! To delete just one, pass an iterator: <code className="bg-white px-1 border border-black">ms.erase(ms.find(val))</code>.</li>
-                      <li><code className="bg-white px-1 border border-black">map[key]</code> inserts a default value if key is missing! Use <code className="bg-white px-1 border border-black">find()</code> or <code className="bg-white px-1 border border-black">count()</code> for read-only checks.</li>
-                      <li><code className="bg-white px-1 border border-black">stack.pop()</code> returns <code className="bg-white px-1 border border-black">void</code> in C++ standard library. Always read <code className="bg-white px-1 border border-black">stack.top()</code> before popping!</li>
+                      <li>C++ <code className="bg-white px-1 border border-black">std::priority_queue</code> defaults to a <strong>MAX-HEAP</strong>.</li>
+                      <li>To create a MIN-HEAP, pass <code className="bg-white px-1 border border-black">priority_queue&lt;T, vector&lt;T&gt;, greater&lt;T&gt;&gt;</code>.</li>
                     </ul>
                   </div>
-
                 </div>
               </div>
             </main>
@@ -917,7 +1138,7 @@
 
           {/* Footer */}
           <footer className="mt-12 text-center text-xs font-mono font-bold text-gray-700 bg-white neo-box p-4">
-            ⚡ C++ Data Structures & Complexity Cheat Sheet • Built with Neo-Brutalism Design • Fast Interview & Competitive Programming Reference
+            ⚡ Clean C++ Data Structures & Algorithms Reference • Neo-Brutalist Interactive Edition
           </footer>
 
         </div>
